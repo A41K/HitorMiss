@@ -144,7 +144,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         const songs = currentArtistDetails.songs;
         currentSong = songs[Math.floor(Math.random() * songs.length)];
-        document.getElementById('song-snippet-audio').src = currentSong.preview;
+        // Ensure the audio preview URL uses HTTPS
+        const previewUrl = currentSong.preview.replace('http://', 'https://');
+        document.getElementById('song-snippet-audio').src = previewUrl;
         document.getElementById('song-guess-input').value = '';
         document.getElementById('feedback-area').textContent = 'Ready to play! Choose a duration.';
         resetPlaybackButtons();
