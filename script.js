@@ -199,14 +199,31 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Guess Submission
+    function normalizeTitle(title) {
+        if (!title) return '';
+        // Convert to lowercase
+        let normalized = title.toLowerCase();
+        // Remove content in parentheses (e.g., feat, remix, version)
+        normalized = normalized.replace(/\s*\([^)]*\)/g, '');
+        // Remove common punctuation that might cause mismatches, but keep spaces
+        normalized = normalized.replace(/[\.,'"!\?&\-#]/g, '');
+        // Remove extra spaces that might have been created
+        normalized = normalized.replace(/\s+/g, ' ').trim();
+        return normalized;
+    }
+
     document.getElementById('submit-guess-button').addEventListener('click', () => {
         if (!currentSong) return;
 
-        const guess = document.getElementById('song-guess-input').value.trim().toLowerCase();
-        const actual = currentSong.title.toLowerCase();
+        const userGuess = document.getElementById('song-guess-input').value;
+        const actualTitle = currentSong.title;
+
+        const normalizedGuess = normalizeTitle(userGuess);
+        const normalizedActual = normalizeTitle(actualTitle);
+        
         // feedbackArea is now declared at a higher scope
 
-        if (guess === actual) {
+        if (normalizedGuess === normalizedActual && normalizedGuess !== '') {
             let points = 0;
             switch (lastPlaybackDuration) {
                 case 1: points = 10; break;
