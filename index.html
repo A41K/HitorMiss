@@ -8,6 +8,59 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
     <link rel="icon" type="image/x-icon" href="Favicon.jpg">
 </head>
+<style>
+    /* Artist Search Results Styling */
+.artist-results-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centers the .artist-list if it has a max-width */
+    padding: 20px;
+    margin-bottom: 20px;
+    width: 100%;
+}
+
+.artist-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    max-width: 400px; /* Adjust for desired width, similar to image */
+}
+
+.artist-item {
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    margin-bottom: 8px;
+    background-color: rgba(0, 0, 0, 0.2); /* Darker, more subtle background for dark mode */
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+    border: 1px solid rgba(255, 255, 255, 0.1); /* Subtle border for dark mode */
+}
+
+.artist-item:hover {
+    background-color: rgba(0, 0, 0, 0.35); /* Darker hover for dark mode */
+}
+
+.artist-item-image {
+    width: 40px;
+    height: 40px;
+    border-radius: 4px; /* Square-ish with rounded corners */
+    object-fit: cover;
+    margin-right: 12px;
+    background-color: rgba(255,255,255,0.1); /* Placeholder bg for images */
+}
+
+.artist-item-name {
+    font-size: 0.95em;
+    color: #e0e0e0; /* Slightly off-white for dark mode text */
+    flex-grow: 1; /* Allow name to take remaining space */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+</style>
 <body>
     <div class="container">
         <header>
