@@ -64,41 +64,85 @@ body.light-mode .container {
 /* Artist Search Results Styling */
 .artist-results-container {
     display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-    justify-content: center;
+    flex-direction: column;
+    align-items: center; /* Centers the .artist-list if it has a max-width */
     padding: 20px;
     margin-bottom: 20px;
+    width: 100%;
 }
 
-.artist-result-item {
-    background-color: rgba(255, 255, 255, 0.1);
-    border-radius: 10px;
-    padding: 15px;
-    text-align: center;
-    cursor: pointer;
-    transition: transform 0.3s ease, background-color 0.3s ease;
-    width: 150px; /* Adjust as needed */
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-}
-
-.artist-result-item:hover {
-    transform: translateY(-5px);
-    background-color: rgba(255, 255, 255, 0.2);
-}
-
-.artist-result-item img {
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
-    object-fit: cover;
-    margin-bottom: 10px;
-}
-
-.artist-result-item p {
-    color: #fff;
-    font-size: 0.9em;
+.artist-list {
+    list-style-type: none;
+    padding: 0;
     margin: 0;
+    width: 100%;
+    max-width: 400px; /* Adjust for desired width, similar to image */
+}
+
+.artist-item {
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    margin-bottom: 8px;
+    background-color: rgba(0, 0, 0, 0.2); /* Darker, more subtle background for dark mode */
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+    border: 1px solid rgba(255, 255, 255, 0.1); /* Subtle border for dark mode */
+}
+
+.artist-item:hover {
+    background-color: rgba(0, 0, 0, 0.35); /* Darker hover for dark mode */
+}
+
+.artist-item-image {
+    width: 40px;
+    height: 40px;
+    border-radius: 4px; /* Square-ish with rounded corners */
+    object-fit: cover;
+    margin-right: 12px;
+    background-color: rgba(255,255,255,0.1); /* Placeholder bg for images */
+}
+
+.artist-item-name {
+    font-size: 0.95em;
+    color: #e0e0e0; /* Slightly off-white for dark mode text */
+    flex-grow: 1; /* Allow name to take remaining space */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Light Mode adjustments for Artist Search Results */
+body.light-mode .artist-item {
+    background-color: rgba(255, 255, 255, 0.8); /* Lighter background for light mode */
+    border: 1px solid rgba(0, 0, 0, 0.1); /* Subtle border for light mode */
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+body.light-mode .artist-item:hover {
+    background-color: #fff; /* White hover for light mode */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+body.light-mode .artist-item-name {
+    color: #333; /* Dark text for light mode */
+}
+
+body.light-mode .artist-item-image {
+    background-color: rgba(0,0,0,0.05); /* Placeholder bg for images in light mode */
+}
+
+/* Styling for the "Searching..." and "No artists found." messages */
+#artist-results-container p {
+    color: #ccc; /* Default for dark mode */
+    font-size: 1em;
+    text-align: center;
+    padding: 20px;
+}
+
+body.light-mode #artist-results-container p {
+    color: #555; /* For light mode */
 }
 
 /* Game Container Styling */

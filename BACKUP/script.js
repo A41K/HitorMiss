@@ -37,6 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const artistSearchButton = document.getElementById('artist-search-button');
     const artistResultsContainer = document.getElementById('artist-results-container');
     const gameContainer = document.getElementById('game-container');
+    const feedbackArea = document.getElementById('feedback-area'); // Moved for wider scope
 
     // API details will be added here for the new service
     let currentArtistDetails = null; // Will store { id, name, image, songs: [] }
@@ -154,6 +155,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const play1sButton = document.getElementById('play-1s-button');
     const play3sButton = document.getElementById('play-3s-button');
     const play5sButton = document.getElementById('play-5s-button');
+    const skipButton = document.getElementById('skip-button'); // Added skip button
     let buttonRevealTimer1 = null;
     let buttonRevealTimer2 = null;
 
@@ -186,13 +188,23 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('play-3s-button').addEventListener('click', () => playSnippet(3));
     document.getElementById('play-5s-button').addEventListener('click', () => playSnippet(5));
 
+    // Skip button event listener
+    skipButton.addEventListener('click', () => {
+        if (currentSong) {
+            currentScore -= 2; // Penalty for skipping, adjust as needed
+            document.getElementById('current-score').textContent = currentScore;
+            feedbackArea.textContent = 'Song skipped! -2 points.';
+            loadNewSong();
+        }
+    });
+
     // Guess Submission
     document.getElementById('submit-guess-button').addEventListener('click', () => {
         if (!currentSong) return;
 
         const guess = document.getElementById('song-guess-input').value.trim().toLowerCase();
         const actual = currentSong.title.toLowerCase();
-        const feedbackArea = document.getElementById('feedback-area');
+        // feedbackArea is now declared at a higher scope
 
         if (guess === actual) {
             let points = 0;

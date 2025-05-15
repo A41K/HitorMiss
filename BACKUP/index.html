@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Artist Knowledge Quiz</title>
+    <title>Hit or Miss</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" href="Favicon.jpg">
 </head>
 <body>
     <div class="container">
@@ -14,9 +15,9 @@
                 <button id="dark-mode-btn" class="theme-btn active" data-theme="dark">🌙</button>
                 <button id="light-mode-btn" class="theme-btn" data-theme="light">☀️</button>
             </div>
-            <div class="menu-icon">&#9776;</div>
-            <h1>How good do you know your favourite artist?</h1>
 
+            <h1 class="green">Hit</h1> <h1>or</h1> <h1 class="red">Miss</h1>
+            
         </header>
         <main>
             <div class="search-container">
@@ -41,6 +42,7 @@
                     <button id="play-1s-button">Play 1s</button>
                     <button id="play-3s-button">Play 3s</button>
                     <button id="play-5s-button">Play 5s</button>
+                    <button id="skip-button">Skip</button>
                 </div>
                 <div id="score-area">
                     <p>Score: <span id="current-score">0</span></p>
@@ -86,6 +88,11 @@
             </div>
         </main>
     </div>
+
+    <footer class="footer">
+        This was made by Andrew a.k.a A41K
+    </footer>
+
     <script src="script.js"></script>
 </body>
 </html>
