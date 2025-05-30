@@ -23,6 +23,80 @@ body {
     padding: 5px;
 }
 
+/* Media Queries for Responsiveness */
+@media (max-width: 768px) {
+    body {
+        padding: 10px;
+    }
+
+    .container {
+        width: 95%;
+        padding: 15px;
+    }
+
+    .header h1 {
+        font-size: 1.8em;
+    }
+
+    .search-section input[type="text"] {
+        width: calc(100% - 100px);
+    }
+
+    .artist-list {
+        max-width: 100%;
+    }
+
+    .artist-item-image {
+        width: 30px;
+        height: 30px;
+        margin-right: 8px;
+    }
+
+    .artist-item-name {
+        font-size: 0.9em;
+    }
+
+    .game-container {
+        padding: 15px;
+    }
+
+    .artist-info-game img {
+        width: 80px;
+        height: 80px;
+    }
+
+    .artist-info-game h2 {
+        font-size: 1.2em;
+    }
+
+    #song-guess-input {
+        width: 90%;
+    }
+
+    #playback-controls button,
+    #submit-guess-button,
+    #skip-button {
+        padding: 8px 15px;
+        font-size: 0.9em;
+    }
+
+    .score-area p,
+    #feedback-area {
+        font-size: 0.9em;
+    }
+
+    .theme-switcher {
+        top: 10px;
+        right: 10px;
+        padding: 3px;
+    }
+
+    .theme-btn {
+        font-size: 16px;
+        padding: 3px 8px;
+    }
+}
+
 .theme-btn {
     background: none;
     border: none;
