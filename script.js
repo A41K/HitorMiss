@@ -240,7 +240,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             feedbackArea.textContent = 'Wrong guess. Try again!';
         }
-    });.
+    });
 
     // Initialize with random gradient background
     function setRandomGradientBackground() {
