@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const artistSearchButton = document.getElementById('artist-search-button');
     const artistResultsContainer = document.getElementById('artist-results-container');
     const gameContainer = document.getElementById('game-container');
-    const feedbackArea = document.getElementById('feedback-area'); // Moved for wider scope
+    const feedbackArea = document.getElementById('feedback-area');
 
     // API details will be added here for the new service
     let currentArtistDetails = null; // Will store { id, name, image, songs: [] }
@@ -46,7 +46,6 @@ document.addEventListener('DOMContentLoaded', () => {
     let lastPlaybackDuration = 0;
 
     const DEEZER_API_BASE_URL = 'https://api.deezer.com';
-    // Using a CORS proxy for development. Replace with your own or a server-side solution for production.
     const CORS_PROXY_BASE = 'https://api.codetabs.com/v1/proxy?quest='; 
 
     async function searchArtists(query) {
@@ -90,15 +89,15 @@ document.addEventListener('DOMContentLoaded', () => {
     artistSearchButton.addEventListener('click', () => {
         const query = artistSearchInput.value.trim();
         if (query) {
-            searchArtists(query); // Changed from searchArtistsSpotify
+            searchArtists(query); 
         }
     });
 
     async function getArtistTracks(artistId) {
         try {
             // Fetch top tracks for the artist
-            const targetUrl = `${DEEZER_API_BASE_URL}/artist/${artistId}/top?limit=50`;
-            const response = await fetch(`${CORS_PROXY_BASE}${encodeURIComponent(targetUrl)}`); // Fetch up to 50 top tracks
+            const targetUrl = `${DEEZER_API_BASE_URL}/artist/${artistId}/top?limit=100`;
+            const response = await fetch(`${CORS_PROXY_BASE}${encodeURIComponent(targetUrl)}`); // Fetch up to 100 top tracks
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
@@ -118,8 +117,7 @@ document.addEventListener('DOMContentLoaded', () => {
         artistResultsContainer.innerHTML = ''; // Clear search results
         artistSearchInput.value = ''; // Clear search input
 
-        // const tracks = await getArtistTopTracks(artistId); // Old Spotify call
-        const tracks = await getArtistTracks(artistId); // New API call placeholder
+        const tracks = await getArtistTracks(artistId); 
         if (tracks.length === 0) {
             document.getElementById('feedback-area').textContent = 'No playable song previews found for this artist.';
             gameContainer.style.display = 'none';
@@ -130,7 +128,7 @@ document.addEventListener('DOMContentLoaded', () => {
             id: artistId,
             name: artistName,
             image: artistImage,
-            songs: tracks.map(track => ({ title: track.title, preview: track.preview })) // Adjusted for Deezer's track object structure
+            songs: tracks.map(track => ({ title: track.title, preview: track.preview }))
         };
         gameContainer.style.display = 'block';
         loadNewSong();
@@ -157,7 +155,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const play1sButton = document.getElementById('play-1s-button');
     const play3sButton = document.getElementById('play-3s-button');
     const play5sButton = document.getElementById('play-5s-button');
-    const skipButton = document.getElementById('skip-button'); // Added skip button
+    const skipButton = document.getElementById('skip-button');
     let buttonRevealTimer1 = null;
     let buttonRevealTimer2 = null;
 
@@ -171,11 +169,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         buttonRevealTimer1 = setTimeout(() => {
             play3sButton.style.display = 'inline-block';
-        }, 10000); // Show 3s button after 10 seconds
+        }, 15000); // Show 3s button after 15 seconds
 
         buttonRevealTimer2 = setTimeout(() => {
             play5sButton.style.display = 'inline-block';
-        }, 20000); // Show 5s button after 20 seconds (10s after 3s button)
+        }, 25000); // Show 5s button after 25 seconds (10s after 3s button)
     }
     
     function playSnippet(duration) {
@@ -193,7 +191,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Skip button event listener
     skipButton.addEventListener('click', () => {
         if (currentSong) {
-            currentScore -= 2; // Penalty for skipping, adjust as needed
+            currentScore -= 5; // Penalty for skipping, adjust as needed
             document.getElementById('current-score').textContent = currentScore;
             feedbackArea.textContent = 'Song skipped! -2 points.';
             loadNewSong();
@@ -238,13 +236,11 @@ document.addEventListener('DOMContentLoaded', () => {
             feedbackArea.textContent = `Correct! +${points} points`;
             clearTimeout(buttonRevealTimer1);
             clearTimeout(buttonRevealTimer2);
-            loadNewSong(); // This will call resetPlaybackButtons()
+            loadNewSong();
         } else {
             feedbackArea.textContent = 'Wrong guess. Try again!';
         }
-    });
-
-    // No API token initialization needed for basic Deezer public API calls used here.
+    });.
 
     // Initialize with random gradient background
     function setRandomGradientBackground() {
