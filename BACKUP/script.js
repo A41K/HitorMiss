@@ -32,25 +32,84 @@ document.addEventListener('DOMContentLoaded', () => {
     darkModeBtn.addEventListener('click', () => setTheme('dark'));
     lightModeBtn.addEventListener('click', () => setTheme('light'));
 
-    // Artist Search Logic
-    const artistSearchInput = document.getElementById('artist-search-input');
-    const artistSearchButton = document.getElementById('artist-search-button');
-    const artistResultsContainer = document.getElementById('artist-results-container');
+    // Search Logic
+    const searchInput = document.getElementById('artist-search-input');
+    const searchButton = document.getElementById('artist-search-button');
+    const searchResultsContainer = document.getElementById('search-results-container');
     const gameContainer = document.getElementById('game-container');
-    const feedbackArea = document.getElementById('feedback-area'); // Moved for wider scope
+    const feedbackArea = document.getElementById('feedback-area');
+    const artistButton = document.getElementById('artist-button');
+    const albumButton = document.getElementById('album-button');
+    const songSnippetAudio = document.getElementById('song-snippet-audio');
 
-    // API details will be added here for the new service
-    let currentArtistDetails = null; // Will store { id, name, image, songs: [] }
+    let searchMode = 'artist'; // 'artist' or 'album'
+    let currentSelectionDetails = null; // Will store { id, name, image, songs: [] }
     let currentSong = null;
     let currentScore = 0;
     let lastPlaybackDuration = 0;
 
     const DEEZER_API_BASE_URL = 'https://api.deezer.com';
-    // Using a CORS proxy for development. Replace with your own or a server-side solution for production.
-    const CORS_PROXY_BASE = 'https://api.codetabs.com/v1/proxy?quest='; 
+    const CORS_PROXY_BASE = 'https://api.codetabs.com/v1/proxy?quest=';
+
+    const backToSearchButton = document.getElementById('back-to-search-button');
+    const currentScoreDisplay = document.getElementById('current-score');
+
+    function resetGameState() {
+        currentScore = 0;
+        currentScoreDisplay.textContent = currentScore;
+        gameContainer.style.display = 'none';
+        feedbackArea.textContent = '';
+        if (songSnippetAudio) {
+            songSnippetAudio.pause();
+            songSnippetAudio.currentTime = 0;
+        }
+    }
+
+    artistButton.addEventListener('click', () => {
+        searchMode = 'artist';
+        artistButton.classList.add('active');
+        albumButton.classList.remove('active');
+        searchInput.placeholder = "Enter an artist name";
+        searchResultsContainer.innerHTML = '';
+        resetGameState();
+    });
+
+    albumButton.addEventListener('click', () => {
+        searchMode = 'album';
+        albumButton.classList.add('active');
+        artistButton.classList.remove('active');
+        searchInput.placeholder = "Enter an album name";
+        searchResultsContainer.innerHTML = '';
+        resetGameState();
+    });
+
+    backToSearchButton.addEventListener('click', () => {
+        resetGameState();
+        searchResultsContainer.innerHTML = ''; // Clear search results
+        searchInput.value = ''; // Clear search input
+    });
+
+    function performSearch() {
+        const query = searchInput.value.trim();
+        if (query) {
+            if (searchMode === 'artist') {
+                searchArtists(query);
+            } else {
+                searchAlbums(query);
+            }
+        }
+    }
+
+    searchButton.addEventListener('click', performSearch);
+
+    searchInput.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') {
+            performSearch();
+        }
+    });
 
     async function searchArtists(query) {
-        artistResultsContainer.innerHTML = '<p>Searching...</p>';
+        searchResultsContainer.innerHTML = '<p>Searching...</p>';
         try {
             const targetUrl = `${DEEZER_API_BASE_URL}/search/artist?q=${encodeURIComponent(query)}`;
             const response = await fetch(`${CORS_PROXY_BASE}${encodeURIComponent(targetUrl)}`);
@@ -61,14 +120,14 @@ document.addEventListener('DOMContentLoaded', () => {
             displayArtistResults(data.data);
         } catch (error) {
             console.error('Error searching artists:', error);
-            artistResultsContainer.innerHTML = '<p>Error searching for artists. Please try again.</p>';
+            searchResultsContainer.innerHTML = '<p>Error searching for artists. Please try again.</p>';
         }
     }
 
     function displayArtistResults(artists) {
-        artistResultsContainer.innerHTML = ''; // Clear previous results
+        searchResultsContainer.innerHTML = ''; // Clear previous results
         if (!artists || artists.length === 0) {
-            artistResultsContainer.innerHTML = '<p>No artists found.</p>';
+            searchResultsContainer.innerHTML = '<p>No artists found.</p>';
             return;
         }
 
@@ -84,26 +143,17 @@ document.addEventListener('DOMContentLoaded', () => {
             li.addEventListener('click', () => selectArtist(artist.id, artist.name, artist.picture_medium));
             ul.appendChild(li);
         });
-        artistResultsContainer.appendChild(ul);
+        searchResultsContainer.appendChild(ul);
     }
-
-    artistSearchButton.addEventListener('click', () => {
-        const query = artistSearchInput.value.trim();
-        if (query) {
-            searchArtists(query); // Changed from searchArtistsSpotify
-        }
-    });
 
     async function getArtistTracks(artistId) {
         try {
-            // Fetch top tracks for the artist
-            const targetUrl = `${DEEZER_API_BASE_URL}/artist/${artistId}/top?limit=50`;
-            const response = await fetch(`${CORS_PROXY_BASE}${encodeURIComponent(targetUrl)}`); // Fetch up to 50 top tracks
+            const targetUrl = `${DEEZER_API_BASE_URL}/artist/${artistId}/top?limit=100`;
+            const response = await fetch(`${CORS_PROXY_BASE}${encodeURIComponent(targetUrl)}`);
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
             const data = await response.json();
-            // Filter tracks that have a preview URL
             return data.data ? data.data.filter(track => track.preview && track.preview !== '') : [];
         } catch (error) {
             console.error('Error fetching artist tracks:', error);
@@ -115,40 +165,115 @@ document.addEventListener('DOMContentLoaded', () => {
     async function selectArtist(artistId, artistName, artistImage) {
         document.getElementById('game-artist-image').src = artistImage;
         document.getElementById('game-artist-name').textContent = artistName;
-        artistResultsContainer.innerHTML = ''; // Clear search results
-        artistSearchInput.value = ''; // Clear search input
+        searchResultsContainer.innerHTML = '';
+        searchInput.value = '';
 
-        // const tracks = await getArtistTopTracks(artistId); // Old Spotify call
-        const tracks = await getArtistTracks(artistId); // New API call placeholder
+        const tracks = await getArtistTracks(artistId);
         if (tracks.length === 0) {
             document.getElementById('feedback-area').textContent = 'No playable song previews found for this artist.';
             gameContainer.style.display = 'none';
             return;
         }
 
-        currentArtistDetails = {
+        currentSelectionDetails = {
             id: artistId,
             name: artistName,
             image: artistImage,
-            songs: tracks.map(track => ({ title: track.title, preview: track.preview })) // Adjusted for Deezer's track object structure
+            songs: tracks.map(track => ({ title: track.title, preview: track.preview }))
+        };
+        gameContainer.style.display = 'block';
+        loadNewSong();
+    }
+
+    async function searchAlbums(query) {
+        searchResultsContainer.innerHTML = '<p>Searching...</p>';
+        try {
+            const targetUrl = `${DEEZER_API_BASE_URL}/search/album?q=${encodeURIComponent(query)}`;
+            const response = await fetch(`${CORS_PROXY_BASE}${encodeURIComponent(targetUrl)}`);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const data = await response.json();
+            displayAlbumResults(data.data);
+        } catch (error) {
+            console.error('Error searching albums:', error);
+            searchResultsContainer.innerHTML = '<p>Error searching for albums. Please try again.</p>';
+        }
+    }
+
+    function displayAlbumResults(albums) {
+        searchResultsContainer.innerHTML = '';
+        if (!albums || albums.length === 0) {
+            searchResultsContainer.innerHTML = '<p>No albums found.</p>';
+            return;
+        }
+
+        const ul = document.createElement('ul');
+        ul.className = 'artist-list';
+        albums.slice(0, 10).forEach(album => {
+            const li = document.createElement('li');
+            li.className = 'artist-item';
+            li.innerHTML = `
+                <img src="${album.cover_small}" alt="${album.title}" class="artist-item-image">
+                <span class="artist-item-name">${album.title} - ${album.artist.name}</span>
+            `;
+            li.addEventListener('click', () => selectAlbum(album.id, album.title, album.cover_medium, album.artist.name));
+            ul.appendChild(li);
+        });
+        searchResultsContainer.appendChild(ul);
+    }
+
+    async function getAlbumTracks(albumId) {
+        try {
+            const targetUrl = `${DEEZER_API_BASE_URL}/album/${albumId}/tracks`;
+            const response = await fetch(`${CORS_PROXY_BASE}${encodeURIComponent(targetUrl)}`);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const data = await response.json();
+            return data.data ? data.data.filter(track => track.preview && track.preview !== '') : [];
+        } catch (error) {
+            console.error('Error fetching album tracks:', error);
+            document.getElementById('feedback-area').textContent = 'Error fetching tracks. Please try again.';
+            return [];
+        }
+    }
+
+    async function selectAlbum(albumId, albumTitle, albumCover, artistName) {
+        document.getElementById('game-artist-image').src = albumCover;
+        document.getElementById('game-artist-name').textContent = `${albumTitle} by ${artistName}`;
+        searchResultsContainer.innerHTML = '';
+        searchInput.value = '';
+
+        const tracks = await getAlbumTracks(albumId);
+        if (tracks.length === 0) {
+            document.getElementById('feedback-area').textContent = 'No playable song previews found for this album.';
+            gameContainer.style.display = 'none';
+            return;
+        }
+
+        currentSelectionDetails = {
+            id: albumId,
+            name: albumTitle,
+            image: albumCover,
+            songs: tracks.map(track => ({ title: track.title, preview: track.preview }))
         };
         gameContainer.style.display = 'block';
         loadNewSong();
     }
 
     function loadNewSong() {
-        if (!currentArtistDetails || currentArtistDetails.songs.length === 0) {
-            document.getElementById('feedback-area').textContent = 'No songs available for the selected artist.';
-            // Optionally hide game container or show a message
+        if (!currentSelectionDetails || currentSelectionDetails.songs.length === 0) {
+            document.getElementById('feedback-area').textContent = 'No songs available.';
             return;
         }
-        const songs = currentArtistDetails.songs;
+        const songs = currentSelectionDetails.songs;
         currentSong = songs[Math.floor(Math.random() * songs.length)];
-        // Ensure the audio preview URL uses HTTPS
         const previewUrl = currentSong.preview.replace('http://', 'https://');
         document.getElementById('song-snippet-audio').src = previewUrl;
         document.getElementById('song-guess-input').value = '';
         document.getElementById('feedback-area').textContent = 'Ready to play! Choose a duration.';
+        document.getElementById('skipped-song-display').textContent = '';
         resetPlaybackButtons();
     }
 
@@ -157,7 +282,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const play1sButton = document.getElementById('play-1s-button');
     const play3sButton = document.getElementById('play-3s-button');
     const play5sButton = document.getElementById('play-5s-button');
-    const skipButton = document.getElementById('skip-button'); // Added skip button
+    const skipButton = document.getElementById('skip-button');
+    const skippedSongDisplay = document.getElementById('skipped-song-display');
     let buttonRevealTimer1 = null;
     let buttonRevealTimer2 = null;
 
@@ -171,11 +297,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         buttonRevealTimer1 = setTimeout(() => {
             play3sButton.style.display = 'inline-block';
-        }, 10000); // Show 3s button after 10 seconds
+        }, 15000);
 
         buttonRevealTimer2 = setTimeout(() => {
             play5sButton.style.display = 'inline-block';
-        }, 20000); // Show 5s button after 20 seconds (10s after 3s button)
+        }, 25000);
     }
     
     function playSnippet(duration) {
@@ -190,26 +316,21 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('play-3s-button').addEventListener('click', () => playSnippet(3));
     document.getElementById('play-5s-button').addEventListener('click', () => playSnippet(5));
 
-    // Skip button event listener
     skipButton.addEventListener('click', () => {
         if (currentSong) {
-            currentScore -= 2; // Penalty for skipping, adjust as needed
+            currentScore -= 5;
             document.getElementById('current-score').textContent = currentScore;
-            feedbackArea.textContent = 'Song skipped! -2 points.';
+            skippedSongDisplay.textContent = `Skipped: ${currentSong.title}`;
+            feedbackArea.textContent = `-5 points. You missed: ${currentSong.title}`;
             loadNewSong();
         }
     });
 
-    // Guess Submission
     function normalizeTitle(title) {
         if (!title) return '';
-        // Convert to lowercase
         let normalized = title.toLowerCase();
-        // Remove content in parentheses (e.g., feat, remix, version)
-        normalized = normalized.replace(/\s*\([^)]*\)/g, '');
-        // Remove common punctuation that might cause mismatches, but keep spaces
-        normalized = normalized.replace(/[\.,'"!\?&\-#]/g, '');
-        // Remove extra spaces that might have been created
+        normalized = normalized.replace(/\s*\(.*?\)\s*/g, '');
+        normalized = normalized.replace(/[.,'"!?&#-]/g, '');
         normalized = normalized.replace(/\s+/g, ' ').trim();
         return normalized;
     }
@@ -223,8 +344,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const normalizedGuess = normalizeTitle(userGuess);
         const normalizedActual = normalizeTitle(actualTitle);
         
-        // feedbackArea is now declared at a higher scope
-
         if (normalizedGuess === normalizedActual && normalizedGuess !== '') {
             let points = 0;
             switch (lastPlaybackDuration) {
@@ -238,15 +357,12 @@ document.addEventListener('DOMContentLoaded', () => {
             feedbackArea.textContent = `Correct! +${points} points`;
             clearTimeout(buttonRevealTimer1);
             clearTimeout(buttonRevealTimer2);
-            loadNewSong(); // This will call resetPlaybackButtons()
+            loadNewSong();
         } else {
             feedbackArea.textContent = 'Wrong guess. Try again!';
         }
     });
 
-    // No API token initialization needed for basic Deezer public API calls used here.
-
-    // Initialize with random gradient background
     function setRandomGradientBackground() {
         const h1 = Math.floor(Math.random() * 360);
         const h2 = Math.floor(Math.random() * 360);

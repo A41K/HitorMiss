@@ -69,26 +69,31 @@
                 <button id="light-mode-btn" class="theme-btn" data-theme="light">☀️</button>
             </div>
 
-            <h1 class="green">Hit</h1> <h1>or</h1> <h1 class="red">Miss</h1>
+            <h1 class="green">Hit</h1> <h1 style="font-style: italic;">or</h1> <h1 class="red">Miss</h1>
             
         </header>
         <main>
+            <div class="search-toggle">
+                <button id="artist-button" class="toggle-button active">Artist</button>
+                <button id="album-button" class="toggle-button">Albums</button>
+            </div>
             <div class="search-container">
                 <input type="text" id="artist-search-input" placeholder="Enter an artist name">
                 <button class="search-button" id="artist-search-button">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
                 </button>
             </div>
-            <div id="artist-results-container" class="artist-results-container"></div>
+            <div id="search-results-container" class="artist-results-container"></div>
             <div id="game-container" class="game-container" style="display: none;">
                 <div id="artist-info" class="artist-info-game">
                     <img id="game-artist-image" src="" alt="Artist Image">
                     <h2 id="game-artist-name"></h2>
+                    <button id="back-to-search-button" class="back-button">Back to Search</button>
                 </div>
                 <audio id="song-snippet-audio"></audio>
                 <div id="guess-area">
                     <p>Guess the song!</p>
-                    <input type="text" id="song-guess-input" placeholder="Enter song name">
+                    <input type="text" id="song-guess-input" placeholder="Enter song name (example: DUCKWORTH)">
                     <button id="submit-guess-button">Submit Guess</button>
                 </div>
                 <div id="playback-controls">
@@ -96,25 +101,30 @@
                     <button id="play-3s-button">Play 3s</button>
                     <button id="play-5s-button">Play 5s</button>
                     <button id="skip-button">Skip</button>
+                    <span id="skipped-song-display" style="margin-left: 10px; font-weight: bold;"></span>
                 </div>
                 <div id="score-area">
                     <p>Score: <span id="current-score">0</span></p>
                 </div>
                 <div id="feedback-area"></div>
             </div>
+            <div
+            <span id="skipped-song-display" style="margin-left: 10px; font-weight: bold;"></span>
+            </div>
             <div class="tiles-container">
+                
                 <div class="tile" data-duration="5">
-                    <h2>Will it take 5s?</h2>
+                    <h2>Will it take 5s? <span style="font-size: 0.5em; color: gray;">(Decoration)</span></h2>
                     <audio src="DUCKWORTH.mp3"></audio>
                     <button class="tile-play-button">Play 5s</button>
                 </div>
                 <div class="tile" data-duration="1">
-                    <h2>Will it take 1s?</h2>
+                    <h2>Will it take 1s? <span style="font-size: 0.5em; color: gray;">(Decoration)</span></h2>
                     <audio src="DUCKWORTH.mp3"></audio>
                     <button class="tile-play-button">Play 1s</button>
                 </div>
                 <div class="tile" data-duration="3">
-                    <h2>Will it take 3s?</h2>
+                    <h2>Will it take 3s? <span style="font-size: 0.5em; color: gray;">(Decoration)</span></h2>
                     <audio src="DUCKWORTH.mp3"></audio>
                     <button class="tile-play-button">Play 3s</button>
                 </div>
@@ -133,7 +143,7 @@
                     </button>
                 </div>
                 <div class="song-info">
-                    <span class="song-title">Song Title</span> - <span class="artist-name">Artist Name</span>
+                    <span class="song-title">Song Title</span> - <span class="artist-name">Artist Name</span> <span style="font-size: 0.75em; color: gray;">(Decoration)</span>
                 </div>
                 <div class="progress-bar-container">
                     <div class="progress-bar"></div>
