@@ -310,6 +310,21 @@ document.addEventListener('DOMContentLoaded', () => {
         audioElement.currentTime = 0;
         audioElement.play();
         setTimeout(() => audioElement.pause(), duration * 1000);
+
+        let penalty = 0;
+        if (duration === 3) {
+            penalty = -2;
+        } else if (duration === 5) {
+            penalty = -5;
+        }
+
+        if (penalty !== 0) {
+            currentScore += penalty;
+            document.getElementById('current-score').textContent = currentScore;
+            feedbackArea.textContent = `Playing for ${duration} seconds. ${penalty} points.`;
+        } else {
+            feedbackArea.textContent = `Playing for ${duration} seconds.`;
+        }
     }
 
     document.getElementById('play-1s-button').addEventListener('click', () => playSnippet(1));
@@ -371,6 +386,35 @@ document.addEventListener('DOMContentLoaded', () => {
         body.style.backgroundAttachment = 'fixed';
         body.style.backgroundSize = 'cover';
     }
+
+    // "Will it take" buttons logic
+    document.querySelectorAll('.tile-play-button').forEach(button => {
+        button.addEventListener('click', function() {
+            const duration = parseInt(this.closest('.tile').dataset.duration);
+            if (currentSong && songSnippetAudio) {
+                songSnippetAudio.currentTime = 0;
+                songSnippetAudio.play();
+                setTimeout(() => songSnippetAudio.pause(), duration * 1000);
+
+                let penalty = 0;
+                if (duration === 3) {
+                    penalty = -2;
+                } else if (duration === 5) {
+                    penalty = -5;
+                }
+
+                if (penalty !== 0) {
+                    currentScore += penalty;
+                    document.getElementById('current-score').textContent = currentScore;
+                    feedbackArea.textContent = `Playing for ${duration} seconds. ${penalty} points.`;
+                } else {
+                    feedbackArea.textContent = `Playing for ${duration} seconds.`;
+                }
+            } else {
+                feedbackArea.textContent = 'Please select an artist/album first to load a song.';
+            }
+        });
+    });
 
     setRandomGradientBackground();
 });
